@@ -17,14 +17,19 @@ exports.AuthController = void 0;
 const db_config_1 = require("../db/db.config");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const authValidation_1 = require("../validations/authValidation");
 class AuthController {
     static register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const payload = req.body;
-                // const validator = vine.compile(registerSchema);
-                // const payload = await validator.validate(body);
-                //   * Check if email exist
+                const body = req.body;
+                try {
+                    authValidation_1.registerSchema.parse(body);
+                }
+                catch (error) {
+                    return res.json(error);
+                }
                 const findUser = yield db_config_1.prisma.user.findUnique({
                     where: {
                         email: payload.email,
@@ -37,7 +42,6 @@ class AuthController {
                         },
                     });
                 }
-                //   * Encrypt the password
                 const salt = bcryptjs_1.default.genSaltSync(10);
                 payload.password = bcryptjs_1.default.hashSync(payload.password, salt);
                 const user = yield db_config_1.prisma.user.create({
@@ -62,6 +66,13 @@ class AuthController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const payload = req.body;
+                const body = req.body;
+                try {
+                    authValidation_1.loginSchema.parse(body);
+                }
+                catch (error) {
+                    return res.json(error);
+                }
                 const findUser = yield db_config_1.prisma.user.findUnique({
                     where: {
                         email: payload.email,

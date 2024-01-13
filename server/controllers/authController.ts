@@ -1,17 +1,20 @@
-import { Response, Request } from "express";
+import { type Request, type Response, NextFunction } from "express";
 // import { registerSchema } from "../validations/authValidation";
 import { prisma } from "../db/db.config";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { loginSchema, registerSchema } from "../validations/authValidation";
 
 export class AuthController {
   static async register(req: Request, res: Response) {
     try {
       const payload = req.body;
-      // const validator = vine.compile(registerSchema);
-      // const payload = await validator.validate(body);
-
-      //   * Check if email exist
+      const body = req.body;
+      try {
+        registerSchema.parse(body);
+      } catch (error) {
+        return res.json(error);
+      }
       const findUser = await prisma.user.findUnique({
         where: {
           email: payload.email,
@@ -26,7 +29,6 @@ export class AuthController {
         });
       }
 
-      //   * Encrypt the password
       const salt = bcrypt.genSaltSync(10);
       payload.password = bcrypt.hashSync(payload.password, salt);
 
@@ -47,10 +49,16 @@ export class AuthController {
     }
   }
 
-  
   static async login(req: Request, res: Response) {
     try {
       const payload = req.body;
+      const body = req.body;
+      try {
+        loginSchema.parse(body);
+      } catch (error) {
+        return res.json(error);
+      }
+
       const findUser = await prisma.user.findUnique({
         where: {
           email: payload.email,
@@ -95,5 +103,4 @@ export class AuthController {
       });
     }
   }
-
 }
