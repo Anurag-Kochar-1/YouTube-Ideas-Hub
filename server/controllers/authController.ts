@@ -1,5 +1,4 @@
-import { type Request, type Response, NextFunction } from "express";
-// import { registerSchema } from "../validations/authValidation";
+import { type Request, type Response } from "express";
 import { prisma } from "../db/db.config";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";

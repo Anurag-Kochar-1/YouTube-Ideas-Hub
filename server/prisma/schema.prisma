@@ -1,5 +1,10 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
+enum IdeaStatus {
+  LISTED
+  BLOCKED
+  DELETED
+}
 
 generator client {
   provider = "prisma-client-js"
@@ -10,12 +15,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id String @id @default(uuid())
+  id        String   @id @default(uuid())
   firstName String
-  lastName String
-  email String @unique
-  password String
-  createdAt  DateTime @default(now())
+  lastName  String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  ideas     Idea[]
 }
+
+model Idea {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  category    String
+  createdBy   User       @relation(fields: [createdById], references: [id])
+  createdById String
+  createdAt   DateTime   @default(now())
+  status      IdeaStatus @default(LISTED)
+}
+
+
+
