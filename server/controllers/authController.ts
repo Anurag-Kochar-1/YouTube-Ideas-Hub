@@ -3,6 +3,9 @@ import { prisma } from "../db/db.config";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { loginSchema, registerSchema } from "../validations/authValidation";
+import passport from "passport";
+import dotenv from "dotenv";
+dotenv.config();
 
 export class AuthController {
   static async register(req: Request, res: Response) {
@@ -101,5 +104,67 @@ export class AuthController {
         message: "Something went wrong.Please try again.",
       });
     }
+  }
+
+  // static async googleCallback(req: Request, res: Response) {
+  //   passport.authenticate("google", {
+  //     successRedirect: process.env.CLIENT_URL_DEV,
+  //     failureRedirect: `${process.env.CLIENT_URL_DEV}/login/failed`,
+  //     scope: ["email", "profile"],
+  //   });
+  // }
+  // static async fowardToGoogleAuthServer(req: Request, res: Response) {
+  //   try {
+  //     const response = await axios.get("https://accounts.google.com/o/oauth2/v2/auth", {
+  //       params: req.query,
+  //     });
+  //     res.send(response);
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(500).json({ error: "Internal Server Error" });
+  //   }
+  // }
+  // static async googleAuthSavingInDb(req: Request, res: Response) {
+  //   const user = req.user;
+  //   console.log(user);
+  // }
+  // static async googleAuthFailed(req: Request, res: Response) {
+  //   res.status(401);
+  //   throw new Error("Login Failed");
+  // }
+  // static async logoutGoogle(req: Request, res: Response) {
+  //   req.logout((err) => {
+  //     if (err) {
+  //       console.log(err);
+  //     }
+  //     res.redirect("/");
+  //   });
+  // }
+
+  static async googleAuth(req: Request, res: Response) {
+    return passport.authenticate("google", ["profile", "email"] as any);
+  }
+
+  static async googleCallback(req: Request, res: Response) {
+    return passport.authenticate("google", {
+      successRedirect: `http://localhost:3000/`,
+      failureRedirect: "/login/failed",
+    });
+  }
+  static async googleLoginFail(req: Request, res: Response) {
+    return res.status(401).json({
+      error: true,
+      message: "Log in failure",
+    });
+  }
+  static async googleLoginSuccess(req: Request, res: Response) {
+    return res.status(401).json({
+      error: true,
+      message: "Log in failure",
+    });
+  }
+  static async googleLogout(req: any, res: Response) {
+    req.logout();
+    return res.redirect(`http://localhost:3000/`);
   }
 }

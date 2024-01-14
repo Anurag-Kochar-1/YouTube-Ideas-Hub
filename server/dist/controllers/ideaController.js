@@ -53,13 +53,45 @@ class IdeaController {
     static fetch(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const id = req.params.id;
+                const id = req.query.id;
                 const data = yield db_config_1.prisma.idea.findFirstOrThrow({
                     where: {
-                        id: id,
+                        id: id === null || id === void 0 ? void 0 : id.toString(),
                     },
                     include: {
                         createdBy: true,
+                    },
+                });
+                return res.json(data);
+            }
+            catch (error) {
+                return res.json(error);
+            }
+        });
+    }
+    static fetchByUser(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userId = req.user;
+                const data = yield db_config_1.prisma.idea.findMany({
+                    where: {
+                        createdById: userId.id,
+                    },
+                });
+                return res.json(data);
+            }
+            catch (error) {
+                return res.json(error);
+            }
+        });
+    }
+    static delete(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const id = req.query.id;
+                const data = yield db_config_1.prisma.idea.delete({
+                    where: {
+                        id: id === null || id === void 0 ? void 0 : id.toString(),
                     },
                 });
                 return res.json(data);

@@ -17,6 +17,9 @@ const db_config_1 = require("../db/db.config");
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const authValidation_1 = require("../validations/authValidation");
+const passport_1 = __importDefault(require("passport"));
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
 class AuthController {
     static register(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -112,6 +115,75 @@ class AuthController {
                     message: "Something went wrong.Please try again.",
                 });
             }
+        });
+    }
+    // static async googleCallback(req: Request, res: Response) {
+    //   passport.authenticate("google", {
+    //     successRedirect: process.env.CLIENT_URL_DEV,
+    //     failureRedirect: `${process.env.CLIENT_URL_DEV}/login/failed`,
+    //     scope: ["email", "profile"],
+    //   });
+    // }
+    // static async fowardToGoogleAuthServer(req: Request, res: Response) {
+    //   try {
+    //     const response = await axios.get("https://accounts.google.com/o/oauth2/v2/auth", {
+    //       params: req.query,
+    //     });
+    //     res.send(response);
+    //   } catch (error) {
+    //     console.log(error);
+    //     res.status(500).json({ error: "Internal Server Error" });
+    //   }
+    // }
+    // static async googleAuthSavingInDb(req: Request, res: Response) {
+    //   const user = req.user;
+    //   console.log(user);
+    // }
+    // static async googleAuthFailed(req: Request, res: Response) {
+    //   res.status(401);
+    //   throw new Error("Login Failed");
+    // }
+    // static async logoutGoogle(req: Request, res: Response) {
+    //   req.logout((err) => {
+    //     if (err) {
+    //       console.log(err);
+    //     }
+    //     res.redirect("/");
+    //   });
+    // }
+    static googleAuth(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return passport_1.default.authenticate("google", ["profile", "email"]);
+        });
+    }
+    static googleCallback(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return passport_1.default.authenticate("google", {
+                successRedirect: `http://localhost:3000/`,
+                failureRedirect: "/login/failed",
+            });
+        });
+    }
+    static googleLoginFail(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return res.status(401).json({
+                error: true,
+                message: "Log in failure",
+            });
+        });
+    }
+    static googleLoginSuccess(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            return res.status(401).json({
+                error: true,
+                message: "Log in failure",
+            });
+        });
+    }
+    static googleLogout(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            req.logout();
+            return res.redirect(`http://localhost:3000/`);
         });
     }
 }
