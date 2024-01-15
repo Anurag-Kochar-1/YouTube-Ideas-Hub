@@ -1,4 +1,18 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
-
-module.exports = nextConfig
+const nextConfig = {
+    async rewrites() {
+        return [
+          {
+            source: '/api/auth/:path',
+            destination: '/api/auth/:path*',
+          },
+          {
+            source: '/api/:path*',
+            destination: 'http://localhost:8000/api/v1/:path*',
+          },
+        ];
+      },
+  };
+  
+  module.exports = nextConfig;
+  

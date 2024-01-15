@@ -37,6 +37,7 @@ class IdeaController {
     }
     static fetchAll(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            console.log;
             try {
                 const data = yield db_config_1.prisma.idea.findMany({
                     include: {
@@ -71,18 +72,21 @@ class IdeaController {
     }
     static fetchByUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const userId = req.user;
-                const data = yield db_config_1.prisma.idea.findMany({
-                    where: {
-                        createdById: userId.id,
-                    },
-                });
-                return res.json(data);
-            }
-            catch (error) {
-                return res.json(error);
-            }
+            (`fetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAll`);
+            console.log(req.session);
+            console.log(req.user);
+            return res.json(req.session);
+            // try {
+            //   const userId: any = req.user;
+            //   const data = await prisma.idea.findMany({
+            //     where: {
+            //       createdById: userId.id ,
+            //     },
+            //   });
+            //   return res.json(data);
+            // } catch (error) {
+            //   return res.json(error);
+            // }
         });
     }
     static delete(req, res) {
