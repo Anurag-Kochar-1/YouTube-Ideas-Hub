@@ -5,6 +5,5 @@ export const ideaSchema = z.object({
   title: z.string().min(1).max(200),
   description: z.string().min(1).max(2000).optional(),
   category: z.string(),
-  createdBy: z.string(),
-  status: z.nativeEnum(IdeaStatus),
+  // status: z.nativeEnum(IdeaStatus),
 });

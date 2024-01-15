@@ -5,11 +5,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ideaSchema = void 0;
 const zod_1 = __importDefault(require("zod"));
-const idea_status_enum_1 = require("../constants/idea-status.enum");
 exports.ideaSchema = zod_1.default.object({
     title: zod_1.default.string().min(1).max(200),
     description: zod_1.default.string().min(1).max(2000).optional(),
     category: zod_1.default.string(),
-    createdBy: zod_1.default.string(),
-    status: zod_1.default.nativeEnum(idea_status_enum_1.IdeaStatus),
+    // status: z.nativeEnum(IdeaStatus),
 });

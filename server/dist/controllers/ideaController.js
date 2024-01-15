@@ -15,6 +15,7 @@ const db_config_1 = require("../db/db.config");
 class IdeaController {
     static create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
+            const user = req.user;
             const body = req.body;
             try {
                 ideaValidation_1.ideaSchema.parse(body);
@@ -22,11 +23,12 @@ class IdeaController {
             catch (error) {
                 return res.json(error);
             }
+            const upgradedBody = Object.assign({ createdBy: user.id, status: "LISTED" }, body);
             try {
                 const idea = yield db_config_1.prisma.idea.create({
-                    data: Object.assign(Object.assign({}, body), { createdBy: {
+                    data: Object.assign(Object.assign({}, upgradedBody), { createdBy: {
                             connect: {
-                                id: body.createdBy,
+                                id: user.id,
                             },
                         } }),
                 });
@@ -72,21 +74,18 @@ class IdeaController {
     }
     static fetchByUser(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            (`fetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAll`);
-            console.log(req.session);
-            console.log(req.user);
-            return res.json(req.session);
-            // try {
-            //   const userId: any = req.user;
-            //   const data = await prisma.idea.findMany({
-            //     where: {
-            //       createdById: userId.id ,
-            //     },
-            //   });
-            //   return res.json(data);
-            // } catch (error) {
-            //   return res.json(error);
-            // }
+            try {
+                const user = req.user;
+                const data = yield db_config_1.prisma.idea.findMany({
+                    where: {
+                        createdById: user.id,
+                    },
+                });
+                return res.json(data);
+            }
+            catch (error) {
+                return res.json(error);
+            }
         });
     }
     static delete(req, res) {

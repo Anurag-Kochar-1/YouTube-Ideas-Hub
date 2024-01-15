@@ -36,5 +36,7 @@ model Idea {
   status      IdeaStatus @default(LISTED)
 }
 
-
-
+model IdeaCategory {
+  id   String @id @default(uuid())
+  name String
+}

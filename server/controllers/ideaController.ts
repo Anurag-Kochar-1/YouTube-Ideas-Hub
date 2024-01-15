@@ -1,24 +1,29 @@
 import { type Request, type Response } from "express";
 import { ideaSchema } from "../validations/ideaValidation";
 import { prisma } from "../db/db.config";
-
+import { User } from "../types/user.type";
 
 export class IdeaController {
   static async create(req: Request, res: Response) {
+    const user: User = req.user as User;
     const body = req.body;
     try {
       ideaSchema.parse(body);
     } catch (error) {
       return res.json(error);
     }
-
+    const upgradedBody = {
+      createdBy: user.id,
+      status: "LISTED",
+      ...body,
+    };
     try {
       const idea = await prisma.idea.create({
         data: {
-          ...body,
+          ...upgradedBody,
           createdBy: {
             connect: {
-              id: body.createdBy,
+              id: user.id,
             },
           },
         },
@@ -29,7 +34,7 @@ export class IdeaController {
   }
 
   static async fetchAll(req: Request, res: Response) {
-    console.log
+    console.log;
     try {
       const data = await prisma.idea.findMany({
         include: {
@@ -58,21 +63,17 @@ export class IdeaController {
     }
   }
   static async fetchByUser(req: any, res: Response) {
-    (`fetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAllfetchAll`)
-    console.log(req.session)
-    console.log(req.user)
-    return res.json(req.session)
-    // try {
-    //   const userId: any = req.user;
-    //   const data = await prisma.idea.findMany({
-    //     where: {
-    //       createdById: userId.id ,
-    //     },
-    //   });
-    //   return res.json(data);
-    // } catch (error) {
-    //   return res.json(error);
-    // }
+    try {
+      const user = req.user as User;
+      const data = await prisma.idea.findMany({
+        where: {
+          createdById: user.id ,
+        },
+      });
+      return res.json(data);
+    } catch (error) {
+      return res.json(error);
+    }
   }
   static async delete(req: Request, res: Response) {
     try {

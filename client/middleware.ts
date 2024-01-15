@@ -19,4 +19,6 @@ export default withMiddlewareAuthRequired(async function middleware(
   return response;
 });
 
-export const config = { matcher: ["/admin/:path*", "/api/:path*"] };
+export const config = {
+  matcher: ["/admin/:path*", "/api/:path*", "/test/:path*"],
+};

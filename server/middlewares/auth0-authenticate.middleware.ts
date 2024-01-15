@@ -16,5 +16,7 @@ export const check0AuthJwt = jwt({
   issuer: `${issuerBaseUrl}/`,
   algorithms: ["RS256"],
 }).unless({
-  path: [],
+  path: ["/api/v1/idea-category"],
+
+  method: ["GET", "POST"],
 });
