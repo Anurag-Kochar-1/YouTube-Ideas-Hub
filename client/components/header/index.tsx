@@ -25,8 +25,6 @@ export function Header() {
   );
 }
 
-
-
 import {
   Dialog,
   DialogContent,
@@ -34,7 +32,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -44,12 +42,13 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
-} from "@/components/ui/drawer"
+} from "@/components/ui/drawer";
 import useMediaQuery from "@/hooks/use-media-query";
+import { IdeaForm } from "../forms/idea-form";
 
 export function DrawerDialogDemo() {
-  const [open, setOpen] = React.useState(false)
-  const isDesktop = useMediaQuery("(min-width: 768px)")
+  const [open, setOpen] = React.useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
     return (
@@ -57,32 +56,32 @@ export function DrawerDialogDemo() {
         <DialogTrigger asChild>
           <Button>Post</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit profile</DialogTitle>
             <DialogDescription>
               Make changes to your profile here. Click save when you are done.
             </DialogDescription>
           </DialogHeader>
-     
+          <IdeaForm formMode="CREATE" />
         </DialogContent>
       </Dialog>
-    )
+    );
   }
 
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button >Post</Button>
+        <Button>Post</Button>
       </DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent className="max-h-[85vh]">
         <DrawerHeader className="text-left">
           <DrawerTitle>Edit profile</DrawerTitle>
           <DrawerDescription>
             Make changes to your profile here. Click save when you are done.
           </DrawerDescription>
         </DrawerHeader>
- 
+        <IdeaForm formMode="CREATE" />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>
@@ -90,6 +89,5 @@ export function DrawerDialogDemo() {
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-  )
+  );
 }
-
