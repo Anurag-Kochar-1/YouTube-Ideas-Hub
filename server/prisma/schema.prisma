@@ -25,18 +25,20 @@ model User {
   ideas     Idea[]
 }
 
-model Idea {
-  id          String     @id @default(uuid())
-  title       String
-  description String?
-  category    String
-  createdBy   User       @relation(fields: [createdById], references: [id])
-  createdById String
-  createdAt   DateTime   @default(now())
-  status      IdeaStatus @default(LISTED)
+model IdeaCategory {
+  id    String @id @default(uuid())
+  name  String
+  ideas Idea[] @relation("IdeaToCategory")
 }
 
-model IdeaCategory {
-  id   String @id @default(uuid())
-  name String
+model Idea {
+  id           String         @id @default(uuid())
+  title        String
+  description  String?
+  categories   IdeaCategory[] @relation("IdeaToCategory")
+  createdBy    User           @relation(fields: [createdById], references: [id])
+  createdById  String
+  createdAt    DateTime       @default(now())
+  status       IdeaStatus     @default(LISTED)
+  suggestedFor String[]
 }

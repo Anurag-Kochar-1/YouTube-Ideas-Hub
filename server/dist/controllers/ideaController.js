@@ -24,17 +24,32 @@ class IdeaController {
                 return res.json(error);
             }
             const upgradedBody = Object.assign({ createdBy: user.id, status: "LISTED" }, body);
+            for (const categoryId of body.categories) {
+                const category = yield db_config_1.prisma.ideaCategory.findUnique({
+                    where: { id: categoryId },
+                });
+                if (!category) {
+                    return res.status(400).json({ error: `Invalid category ID: ${categoryId}` });
+                }
+            }
             try {
                 const idea = yield db_config_1.prisma.idea.create({
                     data: Object.assign(Object.assign({}, upgradedBody), { createdBy: {
                             connect: {
                                 id: user.id,
                             },
+                        }, categories: {
+                            connect: body.categories.map((categoryId) => ({ id: categoryId })),
                         } }),
+                    include: {
+                        categories: true,
+                    },
                 });
                 return res.json({ status: 201, message: "Idea created", idea });
             }
-            catch (error) { }
+            catch (error) {
+                return res.json(error);
+            }
         });
     }
     static fetchAll(req, res) {
@@ -44,6 +59,7 @@ class IdeaController {
                 const data = yield db_config_1.prisma.idea.findMany({
                     include: {
                         createdBy: true,
+                        categories: true,
                     },
                 });
                 return res.json(data);
@@ -56,13 +72,14 @@ class IdeaController {
     static fetch(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const id = req.query.id;
+                const id = req.params.id;
                 const data = yield db_config_1.prisma.idea.findFirstOrThrow({
                     where: {
                         id: id === null || id === void 0 ? void 0 : id.toString(),
                     },
                     include: {
                         createdBy: true,
+                        categories: true,
                     },
                 });
                 return res.json(data);
@@ -76,9 +93,14 @@ class IdeaController {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const user = req.user;
+                console.log(`🍎 user`);
+                console.log(user);
                 const data = yield db_config_1.prisma.idea.findMany({
                     where: {
                         createdById: user.id,
+                    },
+                    include: {
+                        categories: true,
                     },
                 });
                 return res.json(data);

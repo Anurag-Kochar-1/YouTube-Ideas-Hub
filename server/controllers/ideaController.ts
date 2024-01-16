@@ -17,6 +17,16 @@ export class IdeaController {
       status: "LISTED",
       ...body,
     };
+
+    for (const categoryId of body.categories) {
+      const category = await prisma.ideaCategory.findUnique({
+        where: { id: categoryId },
+      });
+      if (!category) {
+        return res.status(400).json({ error: `Invalid category ID: ${categoryId}` });
+      }
+    }
+
     try {
       const idea = await prisma.idea.create({
         data: {
@@ -26,11 +36,19 @@ export class IdeaController {
               id: user.id,
             },
           },
+          categories: {
+            connect: body.categories.map((categoryId: string) => ({ id: categoryId })),
+          },
+        },
+        include: {
+          categories: true,
         },
       });
 
       return res.json({ status: 201, message: "Idea created", idea });
-    } catch (error) {}
+    } catch (error) {
+      return res.json(error);
+    }
   }
 
   static async fetchAll(req: Request, res: Response) {
@@ -39,6 +57,7 @@ export class IdeaController {
       const data = await prisma.idea.findMany({
         include: {
           createdBy: true,
+          categories: true,
         },
       });
       return res.json(data);
@@ -48,13 +67,14 @@ export class IdeaController {
   }
   static async fetch(req: Request, res: Response) {
     try {
-      const id = req.query.id;
+      const id = req.params.id;
       const data = await prisma.idea.findFirstOrThrow({
         where: {
           id: id?.toString(),
         },
         include: {
           createdBy: true,
+          categories: true,
         },
       });
       return res.json(data);
@@ -65,9 +85,14 @@ export class IdeaController {
   static async fetchByUser(req: any, res: Response) {
     try {
       const user = req.user as User;
+      console.log(`🍎 user`)
+      console.log(user)
       const data = await prisma.idea.findMany({
         where: {
-          createdById: user.id ,
+          createdById: user.id,
+        },
+        include: {
+          categories: true,
         },
       });
       return res.json(data);

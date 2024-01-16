@@ -7,8 +7,8 @@ export default function Page() {
   const handleCreateIdea = async () => {
     try {
       const response = await axios.post(`/api/idea`, {
-        title: "Test idea 1",
-        category: "education",
+        title: "Test idea 2",
+        categories: ["4ced115a-18fa-4504-9cb7-9a0e0fda0d17"],
       });
       console.log(response);
     } catch (error) {
