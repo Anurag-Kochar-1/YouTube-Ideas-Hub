@@ -1,12 +1,12 @@
 "use client";
 
-import axios from "axios";
+import { ourAxios } from "@/lib/axios";
 import React from "react";
 
 export default function Page() {
   const handleCreateIdea = async () => {
     try {
-      const response = await axios.post(`/api/idea`, {
+      const response = await ourAxios.post(`/api/idea`, {
         title: "Travel idea 1",
         categories: ["20f76c57-7667-4d02-bced-11f4f1cd7861"],
       });
@@ -18,7 +18,7 @@ export default function Page() {
 
   const fetchMyIdeas = async () => {
     try {
-      const response = await axios.get(`/api/idea/my`);
+      const response = await ourAxios.get(`/api/idea/my`);
       console.log(response);
     } catch (error) {
       console.log(error);

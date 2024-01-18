@@ -53,9 +53,9 @@ export const customReactSelectStyles: CustomReactSelectStyles = {
 import clsx from "clsx";
 import makeAnimated from "react-select/animated";
 import AsyncSelect from "react-select/async";
-import axios from "axios";
 import { UseFormReturn } from "react-hook-form";
 import { IdeaFormSchemaType } from "./schema";
+import { ourAxios } from "@/lib/axios";
 
 interface IKeySkillsFormFieldProps {
   form: UseFormReturn<IdeaFormSchemaType>;
@@ -65,7 +65,7 @@ export function CategoriesFormField({ form }: IKeySkillsFormFieldProps) {
   const animatedComponents = makeAnimated();
 
   async function loadOptions(searchValue: string, callback: any) {
-    const { data } = await axios.get(`api/idea-category`);
+    const { data } = await ourAxios.get(`api/idea-category`);
     const uniqueData = data.filter(
       (option: any) =>
         !selectedOptions.some(
@@ -87,7 +87,7 @@ export function CategoriesFormField({ form }: IKeySkillsFormFieldProps) {
       name="categories"
       render={({ field }) => (
         <FormItem className="w-full">
-          <FormLabel>Skills</FormLabel>
+          <FormLabel>Categories</FormLabel>
           <AsyncSelect
             unstyled
             getOptionLabel={(e: any) => e?.name}

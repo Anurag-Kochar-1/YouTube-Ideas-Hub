@@ -20,6 +20,6 @@ exports.check0AuthJwt = (0, express_jwt_1.expressjwt)({
     issuer: `${issuerBaseUrl}/`,
     algorithms: ["RS256"],
 }).unless({
-    path: ["/api/v1/idea-category"],
+    path: ["/api/v1/idea-category", "/api/v1/idea"],
     method: ["GET", "POST"],
 });

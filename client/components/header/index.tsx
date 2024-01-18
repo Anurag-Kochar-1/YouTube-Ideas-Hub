@@ -21,6 +21,7 @@ export function Header() {
       {/* <Button> Post</Button> */}
       <DrawerDialogDemo />
       <span>{user?.email}</span>
+      <ThemeDropdownMenu />
     </header>
   );
 }
@@ -45,6 +46,7 @@ import {
 } from "@/components/ui/drawer";
 import useMediaQuery from "@/hooks/use-media-query";
 import { IdeaForm } from "../forms/idea-form";
+import { ThemeDropdownMenu } from "../theme-dropdown-menu";
 
 export function DrawerDialogDemo() {
   const [open, setOpen] = React.useState(false);
@@ -56,7 +58,7 @@ export function DrawerDialogDemo() {
         <DialogTrigger asChild>
           <Button>Post</Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto  scrollbar-thin">
           <DialogHeader>
             <DialogTitle>Edit profile</DialogTitle>
             <DialogDescription>

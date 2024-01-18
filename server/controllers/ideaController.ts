@@ -50,46 +50,14 @@ export class IdeaController {
       return res.json(error);
     }
   }
-  // static async fetchAll(req: Request, res: Response) {
-  //   try {
-  //     let page: number = Number(req.query.page) || 1;
-  //     let limit: number = Number(req.query.limit) || 10;
-  //     if (page <= 0) {
-  //       page = 1;
-  //     }
-  //     if (limit <= 0 || limit > 100) {
-  //       limit = 10;
-  //     }
-  //     const skip = (page - 1) * limit;
-  //     const posts = await prisma.idea.findMany({
-  //       skip: skip,
-  //       take: limit,
-  //       include: {
-  //         createdBy: true,
-  //         categories: true,
-  //       },
-  //     });
 
-  //     const totalPosts: number = await prisma.idea.count();
-  //     const totalPages: number = Math.ceil(totalPosts / limit);
-  //     return res.json({
-  //       data: posts,
-  //       meta: {
-  //         totalPages,
-  //         currentPage: page,
-  //         limit: limit,
-  //       },
-  //     });
-  //   } catch (error) {
-  //     return res.json(error);
-  //   }
-  // }
   static async fetchAll(req: Request, res: Response) {
+    console.log(`🥶 fetchAll method from ideaController called`)
     try {
       let page: number = Number(req.query.page) || 1;
       let limit: number = Number(req.query.limit) || 10;
       let categoryName: string | undefined = req.query.categoryName as string;
-  
+
       if (page <= 0) {
         page = 1;
       }
@@ -97,33 +65,40 @@ export class IdeaController {
         limit = 10;
       }
       const skip = (page - 1) * limit;
-  
+
       const posts = await prisma.idea.findMany({
-        where: categoryName ? {
-          categories: {
-            some: {
-              name: categoryName,
-            },
-          },
-        } : undefined,
+        where: categoryName
+          ? {
+              categories: {
+                some: {
+                  name: categoryName,
+                },
+              },
+            }
+          : undefined,
         skip: skip,
         take: limit,
         include: {
           createdBy: true,
           categories: true,
         },
+        orderBy: {
+          createdAt: "desc",
+        },
       });
-  
+
       const totalPosts: number = await prisma.idea.count({
-        where: categoryName ? {
-          categories: {
-            some: {
-              name: categoryName,
-            },
-          },
-        } : undefined,
+        where: categoryName
+          ? {
+              categories: {
+                some: {
+                  name: categoryName,
+                },
+              },
+            }
+          : undefined,
       });
-  
+
       const totalPages: number = Math.ceil(totalPosts / limit);
       return res.json({
         data: posts,
@@ -137,7 +112,7 @@ export class IdeaController {
       return res.json(error);
     }
   }
-  
+
   static async fetch(req: Request, res: Response) {
     try {
       const id = req.params.id;
