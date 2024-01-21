@@ -35,7 +35,7 @@ export default function RootLayout({
               <Header />
               <main className="px-6 md:px-6 lg:px-10">{children}</main>
               <ModalProvider />
-              <Toaster richColors closeButton  />
+              <Toaster richColors closeButton />
               <Footer />
             </body>
           </ThemeProvider>
