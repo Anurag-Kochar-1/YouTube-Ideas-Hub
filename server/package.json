@@ -4,15 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "rimraf dist && npx prisma generate && npx tsc",
+    "build": "rimraf dist && npx tsc",
     "prestart": "npm run build",
     "start": "node dist/index.js",
     "preserve": "npm run build",
     "serve": "concurrently \"npx tsc -w\"  \"nodemon dist/index.js\"",
     "prettier": "prettier --write .",
-    "vercel-build": "prisma generate && prisma migrate deploy && echo EEEEEEEEEEEE",
-    "generate": "prisma generate",
-    "postinstall": "prisma generate"
+    "vercel-build": "prisma generate && prisma migrate deploy && echo WWW",
+    "migrate:dev": "prisma migrate dev",
+    "migrate:deploy": "prisma migrate deploy",
+    "migrate:status": "prisma migrate status",
+    "generate": "prisma generate"
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
