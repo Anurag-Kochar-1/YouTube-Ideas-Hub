@@ -8,7 +8,7 @@ const nextConfig = {
           },
           {
             source: '/api/:path*',
-            destination: `${process.env.NEXT_PUBLIC_BACKEND_API}/v1/:path*`,
+            destination: `${process.env.NEXT_PUBLIC_BACKEND_API}/api/v1/:path*`,
           },
         ];
       },
