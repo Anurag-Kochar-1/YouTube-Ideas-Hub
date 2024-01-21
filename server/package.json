@@ -10,7 +10,8 @@
     "preserve": "npm run build",
     "serve": "concurrently \"npx tsc -w\"  \"nodemon dist/index.js\"",
     "prettier": "prettier --write .",
-    "vercel-build" : "echo EEEEEEEEEEEE"
+    "vercel-build": "prisma generate && prisma migrate deploy && echo EEEEEEEEEEEE",
+    "postinstall": "prisma generate"
   },
   "keywords": [],
   "author": "",
@@ -39,6 +40,7 @@
     "node-fetch": "^2.7.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "prisma": "^5.8.1",
     "rimraf": "^5.0.5",
     "typescript": "^5.3.3",
     "zod": "^3.22.4"
