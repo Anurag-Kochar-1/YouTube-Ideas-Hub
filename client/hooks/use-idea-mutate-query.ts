@@ -20,7 +20,8 @@ export const useIdeaMutateQuery = () => {
     },
     onSuccess() {
       invalidateQuery(QUERY_KEYS.FETCH_IDEAS)
-      ideaModal.onClose()
+      invalidateQuery(QUERY_KEYS.FETCH_MY_IDEAS)
+      // ideaModal.onClose()
     },
     
   });

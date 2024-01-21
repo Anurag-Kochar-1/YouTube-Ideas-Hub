@@ -8,14 +8,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IdeaController = void 0;
 const ideaValidation_1 = require("../validations/ideaValidation");
 const db_config_1 = require("../db/db.config");
-const axios_1 = __importDefault(require("axios"));
 const client_1 = require("@prisma/client");
 class IdeaController {
     static create(req, res) {
@@ -57,14 +53,98 @@ class IdeaController {
             }
         });
     }
+    // static async fetchAll(req: Request, res: Response) {
+    //   console.log(`🥶 fetchAll method from ideaController called`);
+    //   try {
+    //     let page: number = Number(req.query.page) || 1;
+    //     let limit: number = Number(req.query.limit) || 10;
+    //     let categoryName: string | undefined = req.query.categoryName as string;
+    //     let search: string | undefined = req.query.search as string
+    //     if (page <= 0) {
+    //       page = 1;
+    //     }
+    //     if (limit <= 0 || limit > 100) {
+    //       limit = 10;
+    //     }
+    //     const skip = (page - 1) * limit;
+    //     let posts = await prisma.idea.findMany({
+    //       where: categoryName
+    //         ? {
+    //             categories: {
+    //               some: {
+    //                 name: categoryName,
+    //               },
+    //             },
+    //           }
+    //         : undefined,
+    //       skip: skip,
+    //       take: limit,
+    //       include: {
+    //         createdBy: true,
+    //         categories: true,
+    //       },
+    //       orderBy: {
+    //         createdAt: "desc",
+    //       },
+    //     });
+    //     for (let post of posts) {
+    //       if (post.suggestedFor && Array.isArray(post.suggestedFor)) {
+    //         for (let i = 0; i < post.suggestedFor.length; i++) {
+    //           if (typeof post.suggestedFor[i] === "string") {
+    //             try {
+    //               const id = post.suggestedFor[i];
+    //               const youtubeKey = process.env.YOUTUBE_KEY;
+    //               const { data } = await axios.get(
+    //                 `https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${id}&key=${youtubeKey}`
+    //               );
+    //               const channelData = {
+    //                 channelName: data?.items[0]?.snippet?.title,
+    //                 channelId: data?.items[0]?.id,
+    //                 channelLogo: data?.items[0]?.snippet?.thumbnails?.medium?.url,
+    //                 statistics: {
+    //                   subscriberCount: data?.items[0]?.statistics?.subscriberCount  
+    //                 }
+    //               }
+    //               post.suggestedFor[i] = channelData as Prisma.JsonValue;
+    //             } catch (error) {
+    //               console.log(error);
+    //             }
+    //           }
+    //         }
+    //       }
+    //     }
+    //     const totalPosts: number = await prisma.idea.count({
+    //       where: categoryName
+    //         ? {
+    //             categories: {
+    //               some: {
+    //                 name: categoryName,
+    //               },
+    //             },
+    //           }
+    //         : undefined,
+    //     });
+    //     const totalPages: number = Math.ceil(totalPosts / limit);
+    //     return res.json({
+    //       data: posts,
+    //       meta: {
+    //         totalPages,
+    //         currentPage: page,
+    //         limit: limit,
+    //       },
+    //     });
+    //   } catch (error) {
+    //     return res.json(error);
+    //   }
+    // }
     static fetchAll(req, res) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         return __awaiter(this, void 0, void 0, function* () {
             console.log(`🥶 fetchAll method from ideaController called`);
             try {
                 let page = Number(req.query.page) || 1;
                 let limit = Number(req.query.limit) || 10;
                 let categoryName = req.query.categoryName;
+                let search = req.query.search;
                 if (page <= 0) {
                     page = 1;
                 }
@@ -72,16 +152,29 @@ class IdeaController {
                     limit = 10;
                 }
                 const skip = (page - 1) * limit;
-                let posts = yield db_config_1.prisma.idea.findMany({
-                    where: categoryName
-                        ? {
-                            categories: {
-                                some: {
-                                    name: categoryName,
-                                },
+                // Create an array for the conditions
+                let conditions = [];
+                // Push the conditions into the array
+                if (categoryName) {
+                    conditions.push({
+                        categories: {
+                            some: {
+                                name: categoryName,
                             },
-                        }
-                        : undefined,
+                        },
+                    });
+                }
+                if (search) {
+                    conditions.push({
+                        title: {
+                            contains: search.toLowerCase(),
+                        },
+                    });
+                }
+                let posts = yield db_config_1.prisma.idea.findMany({
+                    where: {
+                        AND: conditions,
+                    },
                     skip: skip,
                     take: limit,
                     include: {
@@ -92,41 +185,11 @@ class IdeaController {
                         createdAt: "desc",
                     },
                 });
-                for (let post of posts) {
-                    if (post.suggestedFor && Array.isArray(post.suggestedFor)) {
-                        for (let i = 0; i < post.suggestedFor.length; i++) {
-                            if (typeof post.suggestedFor[i] === "string") {
-                                try {
-                                    const id = post.suggestedFor[i];
-                                    const youtubeKey = process.env.YOUTUBE_KEY;
-                                    const { data } = yield axios_1.default.get(`https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${id}&key=${youtubeKey}`);
-                                    const channelData = {
-                                        channelName: (_b = (_a = data === null || data === void 0 ? void 0 : data.items[0]) === null || _a === void 0 ? void 0 : _a.snippet) === null || _b === void 0 ? void 0 : _b.title,
-                                        channelId: (_c = data === null || data === void 0 ? void 0 : data.items[0]) === null || _c === void 0 ? void 0 : _c.id,
-                                        channelLogo: (_g = (_f = (_e = (_d = data === null || data === void 0 ? void 0 : data.items[0]) === null || _d === void 0 ? void 0 : _d.snippet) === null || _e === void 0 ? void 0 : _e.thumbnails) === null || _f === void 0 ? void 0 : _f.medium) === null || _g === void 0 ? void 0 : _g.url,
-                                        statistics: {
-                                            subscriberCount: (_j = (_h = data === null || data === void 0 ? void 0 : data.items[0]) === null || _h === void 0 ? void 0 : _h.statistics) === null || _j === void 0 ? void 0 : _j.subscriberCount
-                                        }
-                                    };
-                                    post.suggestedFor[i] = channelData;
-                                }
-                                catch (error) {
-                                    console.log(error);
-                                }
-                            }
-                        }
-                    }
-                }
+                // Rest of your code...
                 const totalPosts = yield db_config_1.prisma.idea.count({
-                    where: categoryName
-                        ? {
-                            categories: {
-                                some: {
-                                    name: categoryName,
-                                },
-                            },
-                        }
-                        : undefined,
+                    where: {
+                        AND: conditions,
+                    },
                 });
                 const totalPages = Math.ceil(totalPosts / limit);
                 return res.json({

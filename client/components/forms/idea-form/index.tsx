@@ -10,12 +10,16 @@ import { CategoriesFormField } from "./categories-multi-select-form-field";
 import { useIdeaMutateQuery } from "@/hooks/use-idea-mutate-query";
 import { Loader2 } from "lucide-react";
 import { SuggestedForFormField } from "./suggested-for-form-field";
+import useMediaQuery from "@/hooks/use-media-query";
+import { cn } from "@/lib/utils";
 
 type IdeaFormPropTypes = {
   formMode: "CREATE";
+  handleModalClose: () => void;
 };
 
-export const IdeaForm = ({ formMode }: IdeaFormPropTypes) => {
+export const IdeaForm = ({ formMode, handleModalClose }: IdeaFormPropTypes) => {
+  const isDesktop = useMediaQuery("(min-width: 768px)");
   const ideaMutateQuery = useIdeaMutateQuery();
   const form = useForm<IdeaFormSchemaType>({
     resolver: zodResolver(ideaFormSchema),
@@ -23,6 +27,7 @@ export const IdeaForm = ({ formMode }: IdeaFormPropTypes) => {
 
   const handleOnSubmit = async (data: IdeaFormSchemaType) => {
     ideaMutateQuery.mutate(data);
+    handleModalClose();
   };
 
   return (
@@ -46,17 +51,26 @@ export const IdeaForm = ({ formMode }: IdeaFormPropTypes) => {
           className="resize-none"
         />
         <CategoriesFormField form={form} />
-        <SuggestedForFormField form={form} />
+        {/* <SuggestedForFormField form={form} /> */}
 
         {/* ========== Buttons ========== */}
         <div className="w-full flex justify-end items-center gap-10">
-          <Button type="button" variant={"outline"} onClick={() => {
-            console.log(form.getValues("suggestedFor"))
-          }}>
-            {" "}
-            Cancel
-          </Button>
-          <Button disabled={ideaMutateQuery.isPending}>
+          {isDesktop ? (
+            <Button
+              type="button"
+              variant={"outline"}
+              onClick={handleModalClose}
+            >
+              {" "}
+              Cancel
+            </Button>
+          ) : null}
+          <Button
+            disabled={ideaMutateQuery.isPending}
+            className={cn("", {
+              "w-full": !isDesktop,
+            })}
+          >
             {" "}
             {ideaMutateQuery.isPending ? (
               <Loader2 size={15} className="animate-spin text-secondary mr-2" />

@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import {
   DropdownMenu,
@@ -11,9 +12,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import { useTheme } from "next-themes";
-import { Laptop, LogOut, Moon, Sun } from "lucide-react";
+import { Laptop, LogOut, Moon, Sun, User2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const UserDropdownMenu = () => {
+  const router = useRouter();
   const { user } = useUser();
   const { setTheme } = useTheme();
   return (
@@ -26,6 +29,15 @@ export const UserDropdownMenu = () => {
         </Avatar>{" "}
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
+        <DropdownMenuLabel>Acccount</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          className="md:hidde"
+          onClick={() => router.push("/my-ideas")}
+        >
+          <User2 className="mr-2 h-4 w-4" />
+          <span>My Ideas</span>
+        </DropdownMenuItem>{" "}
         <DropdownMenuLabel>Theme</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
@@ -38,7 +50,8 @@ export const UserDropdownMenu = () => {
             <span>Dark</span>
           </DropdownMenuItem>
           <DropdownMenuItem onClick={() => setTheme("system")}>
-            <Laptop className="mr-2 h-4 w-4" /><span>System</span>
+            <Laptop className="mr-2 h-4 w-4" />
+            <span>System</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />

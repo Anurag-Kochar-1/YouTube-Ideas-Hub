@@ -66,6 +66,7 @@ interface SuggestedForFormFieldProps {
 export function SuggestedForFormField({ form }: SuggestedForFormFieldProps) {
   const animatedComponents = makeAnimated();
   async function loadOptions(searchValue: string, callback: any) {
+    if(searchValue) return
     try {
       const { data } = await ourAxios.get(`api/youtube/search/channel?q=${searchValue}`);
       const uniqueData = data?.items?.filter(
@@ -94,7 +95,7 @@ export function SuggestedForFormField({ form }: SuggestedForFormFieldProps) {
       render={({ field }) => (
         <FormItem className="w-full">
           <FormLabel>Suggested for</FormLabel>
-          <FormDescription> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Excepturi, aliquid!</FormDescription>
+          <FormDescription>Tag YouTubers to whom you want to suggest an idea</FormDescription>
           <AsyncSelect
             unstyled
             getOptionLabel={(e: any) => e?.snippet?.title}

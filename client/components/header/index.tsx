@@ -7,18 +7,22 @@ import { useIdeaModal } from "@/hooks/use-idea-modal";
 import Link from "next/link";
 import LogoWithText from "../branding/logo-with-text";
 import { UserDropdownMenu } from "../user-dropdown-menu";
+import IdeaDrawerDialog from "../idea-drawer-dialog";
+import { Logo } from "../branding/logo";
 
 export function Header() {
   const { user, error, isLoading } = useUser();
   const ideaModal = useIdeaModal();
   return (
     <header className="w-full z-50 flex justify-between items-center h-16 sticky top-0 border-b-2 border-b-border backdrop-blur-md px-6">
-      <LogoWithText />
+      <LogoWithText className="hidden md:flex" />
+      <Logo className="md:hidden" />
 
-      <div className="w-full justify-end flex items-center gap-6">
-        <Button onClick={ideaModal.onOpen}> Post</Button>
+      <div className="justify-end flex items-center gap-6">
+        {/* <Button onClick={ideaModal.onOpen}> Post</Button> */}
+        <IdeaDrawerDialog />
         {user ? (
-          <Link href={`/my-ideas`}>
+          <Link href={`/my-ideas`} className="hidden md:flex">
             <Button variant={"ghost"}> My Ideas </Button>
           </Link>
         ) : null}

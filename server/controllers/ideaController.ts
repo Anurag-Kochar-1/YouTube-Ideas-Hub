@@ -52,6 +52,96 @@ export class IdeaController {
       return res.json(error);
     }
   }
+  // static async fetchAll(req: Request, res: Response) {
+  //   console.log(`🥶 fetchAll method from ideaController called`);
+  //   try {
+  //     let page: number = Number(req.query.page) || 1;
+  //     let limit: number = Number(req.query.limit) || 10;
+  //     let categoryName: string | undefined = req.query.categoryName as string;
+  //     let search: string | undefined = req.query.search as string
+
+  //     if (page <= 0) {
+  //       page = 1;
+  //     }
+  //     if (limit <= 0 || limit > 100) {
+  //       limit = 10;
+  //     }
+  //     const skip = (page - 1) * limit;
+
+  //     let posts = await prisma.idea.findMany({
+  //       where: categoryName
+  //         ? {
+  //             categories: {
+  //               some: {
+  //                 name: categoryName,
+  //               },
+  //             },
+  //           }
+  //         : undefined,
+  //       skip: skip,
+  //       take: limit,
+  //       include: {
+  //         createdBy: true,
+  //         categories: true,
+  //       },
+  //       orderBy: {
+  //         createdAt: "desc",
+  //       },
+  //     });
+
+  //     for (let post of posts) {
+  //       if (post.suggestedFor && Array.isArray(post.suggestedFor)) {
+  //         for (let i = 0; i < post.suggestedFor.length; i++) {
+  //           if (typeof post.suggestedFor[i] === "string") {
+  //             try {
+  //               const id = post.suggestedFor[i];
+  //               const youtubeKey = process.env.YOUTUBE_KEY;
+  //               const { data } = await axios.get(
+  //                 `https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${id}&key=${youtubeKey}`
+  //               );
+  //               const channelData = {
+  //                 channelName: data?.items[0]?.snippet?.title,
+  //                 channelId: data?.items[0]?.id,
+  //                 channelLogo: data?.items[0]?.snippet?.thumbnails?.medium?.url,
+  //                 statistics: {
+  //                   subscriberCount: data?.items[0]?.statistics?.subscriberCount  
+  //                 }
+
+  //               }
+  //               post.suggestedFor[i] = channelData as Prisma.JsonValue;
+  //             } catch (error) {
+  //               console.log(error);
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+
+  //     const totalPosts: number = await prisma.idea.count({
+  //       where: categoryName
+  //         ? {
+  //             categories: {
+  //               some: {
+  //                 name: categoryName,
+  //               },
+  //             },
+  //           }
+  //         : undefined,
+  //     });
+
+  //     const totalPages: number = Math.ceil(totalPosts / limit);
+  //     return res.json({
+  //       data: posts,
+  //       meta: {
+  //         totalPages,
+  //         currentPage: page,
+  //         limit: limit,
+  //       },
+  //     });
+  //   } catch (error) {
+  //     return res.json(error);
+  //   }
+  // }
 
   static async fetchAll(req: Request, res: Response) {
     console.log(`🥶 fetchAll method from ideaController called`);
@@ -59,7 +149,8 @@ export class IdeaController {
       let page: number = Number(req.query.page) || 1;
       let limit: number = Number(req.query.limit) || 10;
       let categoryName: string | undefined = req.query.categoryName as string;
-
+      let search: string | undefined = req.query.search as string;
+  
       if (page <= 0) {
         page = 1;
       }
@@ -67,17 +158,32 @@ export class IdeaController {
         limit = 10;
       }
       const skip = (page - 1) * limit;
-
+  
+      // Create an array for the conditions
+      let conditions: Prisma.IdeaWhereInput[] = [];
+  
+      // Push the conditions into the array
+      if (categoryName) {
+        conditions.push({
+          categories: {
+            some: {
+              name: categoryName,
+            },
+          },
+        });
+      }
+      if (search) {
+        conditions.push({
+          title: {
+            contains: search.toLowerCase(),
+          },
+        });
+      }
+  
       let posts = await prisma.idea.findMany({
-        where: categoryName
-          ? {
-              categories: {
-                some: {
-                  name: categoryName,
-                },
-              },
-            }
-          : undefined,
+        where: {
+          AND: conditions,
+        },
         skip: skip,
         take: limit,
         include: {
@@ -88,47 +194,15 @@ export class IdeaController {
           createdAt: "desc",
         },
       });
-
-      for (let post of posts) {
-        if (post.suggestedFor && Array.isArray(post.suggestedFor)) {
-          for (let i = 0; i < post.suggestedFor.length; i++) {
-            if (typeof post.suggestedFor[i] === "string") {
-              try {
-                const id = post.suggestedFor[i];
-                const youtubeKey = process.env.YOUTUBE_KEY;
-                const { data } = await axios.get(
-                  `https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${id}&key=${youtubeKey}`
-                );
-                const channelData = {
-                  channelName: data?.items[0]?.snippet?.title,
-                  channelId: data?.items[0]?.id,
-                  channelLogo: data?.items[0]?.snippet?.thumbnails?.medium?.url,
-                  statistics: {
-                    subscriberCount: data?.items[0]?.statistics?.subscriberCount  
-                  }
-
-                }
-                post.suggestedFor[i] = channelData as Prisma.JsonValue;
-              } catch (error) {
-                console.log(error);
-              }
-            }
-          }
-        }
-      }
-
+  
+      // Rest of your code...
+  
       const totalPosts: number = await prisma.idea.count({
-        where: categoryName
-          ? {
-              categories: {
-                some: {
-                  name: categoryName,
-                },
-              },
-            }
-          : undefined,
+        where: {
+          AND: conditions,
+        },
       });
-
+  
       const totalPages: number = Math.ceil(totalPosts / limit);
       return res.json({
         data: posts,

@@ -33,7 +33,7 @@ export default function RootLayout({
           >
             <body className={inter.className}>
               <Header />
-              <main>{children}</main>
+              <main className="px-6 md:px-6 lg:px-10">{children}</main>
               <ModalProvider />
               <Toaster richColors closeButton  />
               <Footer />

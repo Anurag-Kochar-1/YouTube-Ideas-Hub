@@ -35,7 +35,7 @@ const IdeaCard = ({ idea, className }: IdeaCardProps) => {
   
   
   return (
-    <Card className={cn("w-full max-w-4xl 2xl:max-w-6xl mx-auto", className)}>
+    <Card className={cn("w-full mx-auto", className)}>
       <CardHeader>
         <CardTitle className="w-full flex flex-row justify-between items-center gap-4">
           <h5 className="line-clamp-2 truncate"> {idea.title} </h5>

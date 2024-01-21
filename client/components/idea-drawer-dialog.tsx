@@ -20,43 +20,49 @@ import useMediaQuery from "@/hooks/use-media-query";
 import { Button } from "./ui/button";
 import { IdeaForm } from "./forms/idea-form";
 import { useIdeaModal } from "@/hooks/use-idea-modal";
+import { useState } from "react";
 
  const IdeaDrawerDialog = () => {
+  const [open, setOpen] = useState<boolean>(false)
   const ideaModal = useIdeaModal();
   const isDesktop = useMediaQuery("(min-width: 768px)");
+  const handleModalClose = () => {
+    setOpen(false)
+  }
 
   if (isDesktop) {
     return (
-      <Dialog open={ideaModal.isOpen} onOpenChange={ideaModal.onClose}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button>Post</Button>
         </DialogTrigger>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto  scrollbar-thin">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto scrollbar-thin">
           <DialogHeader>
-            <DialogTitle>Edit profile</DialogTitle>
+
+            <DialogTitle>Post an idea</DialogTitle>
             <DialogDescription>
-              Make changes to your profile here. Click save when you are done.
+            let your intrusive thoughts win 💪
             </DialogDescription>
           </DialogHeader>
-          <IdeaForm formMode="CREATE" />
+          <IdeaForm formMode="CREATE" handleModalClose={handleModalClose} />
         </DialogContent>
       </Dialog>
     );
   }
 
   return (
-    <Drawer open={ideaModal.isOpen} onOpenChange={ideaModal.onClose}>
+    <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button>Post</Button>
       </DrawerTrigger>
-      <DrawerContent className="max-h-[85vh]">
+      <DrawerContent className="max-h-[85vh] px-5 py-5">
         <DrawerHeader className="text-left">
-          <DrawerTitle>Edit profile</DrawerTitle>
+          <DrawerTitle>Post an idea</DrawerTitle>
           <DrawerDescription>
-            Make changes to your profile here. Click save when you are done.
+          let your intrusive thoughts win 💪
           </DrawerDescription>
         </DrawerHeader>
-        <IdeaForm formMode="CREATE" />
+        <IdeaForm formMode="CREATE" handleModalClose={handleModalClose} />
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">Cancel</Button>

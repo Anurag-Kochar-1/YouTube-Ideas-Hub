@@ -9,5 +9,6 @@ const IdeaDrawerDialog = dynamic(
 
 export const ModalProvider = () => {
   const ideaModal = useIdeaModal();
-  return <div>{ideaModal.isOpen ? <IdeaDrawerDialog /> : null}</div>;
+  // return <div>{ideaModal.isOpen ? <IdeaDrawerDialog /> : null}</div>;
+  return null
 };

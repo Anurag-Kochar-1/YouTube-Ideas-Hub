@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
 import React, { useState } from "react";
@@ -58,6 +58,8 @@ import AsyncSelect from "react-select/async";
 import { UseFormReturn } from "react-hook-form";
 import { IdeaFormSchemaType } from "./schema";
 import { ourAxios } from "@/lib/axios";
+import { useIdeaCategoriesQuery } from "@/hooks/use-idea-categories-query";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface IKeySkillsFormFieldProps {
   form: UseFormReturn<IdeaFormSchemaType>;
@@ -65,23 +67,26 @@ interface IKeySkillsFormFieldProps {
 
 export function CategoriesFormField({ form }: IKeySkillsFormFieldProps) {
   const animatedComponents = makeAnimated();
+  const { data, isLoading } = useIdeaCategoriesQuery();
+
 
   async function loadOptions(searchValue: string, callback: any) {
-    const { data } = await ourAxios.get(`api/idea-category`);
-    const uniqueData = data.filter(
+    const uniqueData = data?.filter(
       (option: any) =>
         !selectedOptions.some(
           (selectedOption: any) => selectedOption.id === option.id
         )
     );
     if (uniqueData) {
-      const filtedResults = await uniqueData?.filter((option: any) =>
+      const filtedResults = uniqueData?.filter((option: any) =>
         option?.name?.toLowerCase()?.includes(searchValue?.toLowerCase())
       );
       callback(filtedResults);
     }
   }
   const [selectedOptions, setSelectedOptions] = useState<any>([]);
+
+  if(isLoading) return <Skeleton className="h-20" />
 
   return (
     <FormField

@@ -16,5 +16,7 @@ export const useMyIdeasQuery = () => {
   return useQuery<Idea[]>({
     queryKey: [QUERY_KEYS.FETCH_MY_IDEAS],
     queryFn: () => getMyIdeas(),
+    staleTime: Infinity,
+    gcTime: Infinity
   });
 };

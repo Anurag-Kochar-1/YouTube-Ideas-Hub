@@ -10,8 +10,13 @@ import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
 import { useInView } from "react-intersection-observer";
 import { ourAxios } from "@/lib/axios";
+import { useSearchParams } from "next/navigation";
 
 export const IdeasList = () => {
+  const searchParams = useSearchParams();
+  const categoryType = searchParams.get("category");
+  const searchQuery = searchParams.get("search");
+
   const { ref: loadMoreIdeasRef, inView } = useInView();
   const {
     status,
@@ -32,14 +37,19 @@ export const IdeasList = () => {
   } = useInfiniteQuery<any>({
     queryKey: [QUERY_KEYS.FETCH_IDEAS],
     queryFn: async ({ pageParam }) => {
-      const res = await ourAxios.get(`/api/idea?limit=10&page=${pageParam}`);
-      // await new Promise((re) => setTimeout(re, 2000))
+      const URL =
+        categoryType || searchQuery
+          ? `/api/idea?limit=10&page=${pageParam}&categoryName=${
+              categoryType || ""
+            }&search=${searchQuery || ""}`
+          : `/api/idea?limit=10&page=${pageParam}`;
+      const res = await ourAxios.get(URL);
       return res.data.data;
     },
     initialPageParam: 1,
     getNextPageParam: (lastPage, allPages, lastPageParam: any) => {
-      if (lastPage && lastPage?.length === 0) {
-        return 1;
+      if (lastPage.length === 0) {
+        return undefined;
       }
       return lastPageParam + 1;
     },
@@ -49,6 +59,18 @@ export const IdeasList = () => {
       }
       return firstPageParam - 1;
     },
+    // getNextPageParam: (lastPage, allPages, lastPageParam: any) => {
+    //   if (lastPage && lastPage?.length === 0) {
+    //     return 1;
+    //   }
+    //   return lastPageParam + 1;
+    // },
+    // getPreviousPageParam: (firstPage, allPages, firstPageParam: any) => {
+    //   if (firstPageParam <= 1) {
+    //     return undefined;
+    //   }
+    //   return firstPageParam - 1;
+    // },
   });
 
   useEffect(() => {
@@ -57,10 +79,18 @@ export const IdeasList = () => {
     }
   }, [fetchNextPage, inView]);
 
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryType]);
+  useEffect(() => {
+    refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery]);
+
   if (isLoading) return <IdeasListLoading />;
   return (
     <div className="flex flex-col w-full justify-center items-start gap-10">
-      <div className="w-full h-32 bg-black"></div>
       <div className="flex flex-col w-full justify-center items-start gap-6">
         {status === "success" ? (
           <>
@@ -103,7 +133,7 @@ export const IdeasList = () => {
               <span className="mx-auto font-secondary text-sm font-bold">
                 {" "}
                 {data?.pages[0]?.length === 0
-                  ? "Jobs not found"
+                  ? "Ideas not found"
                   : "End of the list 🙂"}{" "}
               </span>
             </div>
