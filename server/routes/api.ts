@@ -18,7 +18,7 @@ router.get("/idea", IdeaController.fetchAll);
 router.post("/idea", addAuth0User, IdeaController.create);
 router.get("/idea/my", addAuth0User, IdeaController.fetchByUser);
 router.get("/idea/:id", IdeaController.fetch);
-router.delete("/idea", IdeaController.delete);
+router.delete("/idea", addAuth0User, IdeaController.delete);
 
 // ============ YouTube routes ============
 router.get(`/youtube/search/channel`, YoutubeController.searchYoutubeChannel);

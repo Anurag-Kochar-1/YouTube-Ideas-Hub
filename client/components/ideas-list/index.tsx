@@ -33,7 +33,7 @@ export const IdeasList = () => {
     queryKey: [QUERY_KEYS.FETCH_IDEAS],
     queryFn: async ({ pageParam }) => {
       const res = await ourAxios.get(`/api/idea?limit=10&page=${pageParam}`);
-      await new Promise((re) => setTimeout(re, 2000))
+      // await new Promise((re) => setTimeout(re, 2000))
       return res.data.data;
     },
     initialPageParam: 1,

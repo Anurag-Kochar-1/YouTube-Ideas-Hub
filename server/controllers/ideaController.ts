@@ -2,6 +2,8 @@ import { type Request, type Response } from "express";
 import { ideaSchema } from "../validations/ideaValidation";
 import { prisma } from "../db/db.config";
 import { User } from "../types/user.type";
+import axios from "axios";
+import { Prisma } from "@prisma/client";
 
 export class IdeaController {
   static async create(req: Request, res: Response) {
@@ -52,7 +54,7 @@ export class IdeaController {
   }
 
   static async fetchAll(req: Request, res: Response) {
-    console.log(`🥶 fetchAll method from ideaController called`)
+    console.log(`🥶 fetchAll method from ideaController called`);
     try {
       let page: number = Number(req.query.page) || 1;
       let limit: number = Number(req.query.limit) || 10;
@@ -66,7 +68,7 @@ export class IdeaController {
       }
       const skip = (page - 1) * limit;
 
-      const posts = await prisma.idea.findMany({
+      let posts = await prisma.idea.findMany({
         where: categoryName
           ? {
               categories: {
@@ -86,6 +88,34 @@ export class IdeaController {
           createdAt: "desc",
         },
       });
+
+      for (let post of posts) {
+        if (post.suggestedFor && Array.isArray(post.suggestedFor)) {
+          for (let i = 0; i < post.suggestedFor.length; i++) {
+            if (typeof post.suggestedFor[i] === "string") {
+              try {
+                const id = post.suggestedFor[i];
+                const youtubeKey = process.env.YOUTUBE_KEY;
+                const { data } = await axios.get(
+                  `https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${id}&key=${youtubeKey}`
+                );
+                const channelData = {
+                  channelName: data?.items[0]?.snippet?.title,
+                  channelId: data?.items[0]?.id,
+                  channelLogo: data?.items[0]?.snippet?.thumbnails?.medium?.url,
+                  statistics: {
+                    subscriberCount: data?.items[0]?.statistics?.subscriberCount  
+                  }
+
+                }
+                post.suggestedFor[i] = channelData as Prisma.JsonValue;
+              } catch (error) {
+                console.log(error);
+              }
+            }
+          }
+        }
+      }
 
       const totalPosts: number = await prisma.idea.count({
         where: categoryName
@@ -150,15 +180,25 @@ export class IdeaController {
   }
   static async delete(req: Request, res: Response) {
     try {
+      const user = req.user as User;
       const id = req.query.id;
+  
       const data = await prisma.idea.delete({
         where: {
           id: id?.toString(),
+          createdBy: {
+            email: user.email,
+          },
         },
       });
+  
       return res.json(data);
     } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2016') {
+        return res.status(403).json({ error: 'User is not authorized to delete this idea' });
+      }
       return res.json(error);
     }
   }
+  
 }

@@ -40,5 +40,5 @@ model Idea {
   createdById  String
   createdAt    DateTime       @default(now())
   status       IdeaStatus     @default(LISTED)
-  suggestedFor String[]
+  suggestedFor Json?
 }

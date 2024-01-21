@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
+import { FormDescription, FormField, FormItem, FormLabel, FormMessage } from "../../ui/form";
 import React, { useState } from "react";
 
 interface CustomReactSelectStyles {
@@ -59,54 +59,59 @@ import { UseFormReturn } from "react-hook-form";
 import { IdeaFormSchemaType } from "./schema";
 import { ourAxios } from "@/lib/axios";
 
-interface IKeySkillsFormFieldProps {
+interface SuggestedForFormFieldProps {
   form: UseFormReturn<IdeaFormSchemaType>;
 }
 
-export function CategoriesFormField({ form }: IKeySkillsFormFieldProps) {
+export function SuggestedForFormField({ form }: SuggestedForFormFieldProps) {
   const animatedComponents = makeAnimated();
-
   async function loadOptions(searchValue: string, callback: any) {
-    const { data } = await ourAxios.get(`api/idea-category`);
-    const uniqueData = data.filter(
-      (option: any) =>
-        !selectedOptions.some(
-          (selectedOption: any) => selectedOption.id === option.id
-        )
-    );
-    if (uniqueData) {
-      const filtedResults = await uniqueData?.filter((option: any) =>
-        option?.name?.toLowerCase()?.includes(searchValue?.toLowerCase())
+    try {
+      const { data } = await ourAxios.get(`api/youtube/search/channel?q=${searchValue}`);
+      const uniqueData = data?.items?.filter(
+        (option: any) =>
+          !selectedOptions.some(
+            (selectedOption: any) => selectedOption.id ===  option?.snippet?.channelId
+          )
       );
-      callback(filtedResults);
+      if (uniqueData) {
+        const filtedResults = await uniqueData?.filter((option: any) =>
+          option?.snippet?.title?.toLowerCase()?.includes(searchValue?.toLowerCase())
+        );
+        callback(filtedResults);
+      }
+    } catch (error) {
+      console.error(error);
     }
   }
+  
   const [selectedOptions, setSelectedOptions] = useState<any>([]);
 
   return (
     <FormField
       control={form.control}
-      name="categories"
+      name="suggestedFor"
       render={({ field }) => (
         <FormItem className="w-full">
-          <FormLabel>Categories</FormLabel>
+          <FormLabel>Suggested for</FormLabel>
+          <FormDescription> Lorem, ipsum dolor sit amet consectetur adipisicing elit. Excepturi, aliquid!</FormDescription>
           <AsyncSelect
             unstyled
-            getOptionLabel={(e: any) => e?.name}
-            getOptionValue={(e: any) => e?.id}
+            getOptionLabel={(e: any) => e?.snippet?.title}
+            getOptionValue={(e: any) => e?.snippet?.channelId}
             isClearable
             isSearchable
             isMulti={true}
             value={selectedOptions}
-            placeholder={"Seach categories..."}
+            placeholder={"Seach channels..."}
             components={animatedComponents}
             loadOptions={loadOptions as any}
             onChange={(options) => {
               const validOptions = options.filter(
-                (option: any) => option.id && option.name
+                (option: any) => option?.snippet?.channelId && option?.snippet?.title
               );
               setSelectedOptions(validOptions);
-              const ids = validOptions.map((option: any) => option.id);
+              const ids = validOptions.map((option: any) => option?.snippet?.channelId);
               if (ids.length > 0) {
                 field.onChange(ids);
               }

@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { CategoriesFormField } from "./categories-multi-select-form-field";
 import { useIdeaMutateQuery } from "@/hooks/use-idea-mutate-query";
 import { Loader2 } from "lucide-react";
+import { SuggestedForFormField } from "./suggested-for-form-field";
 
 type IdeaFormPropTypes = {
   formMode: "CREATE";
@@ -45,17 +46,23 @@ export const IdeaForm = ({ formMode }: IdeaFormPropTypes) => {
           className="resize-none"
         />
         <CategoriesFormField form={form} />
+        <SuggestedForFormField form={form} />
 
         {/* ========== Buttons ========== */}
         <div className="w-full flex justify-end items-center gap-10">
-          <Button
-            type="button"
-
-          >
+          <Button type="button" variant={"outline"} onClick={() => {
+            console.log(form.getValues("suggestedFor"))
+          }}>
             {" "}
-            LOG
+            Cancel
           </Button>
-          <Button disabled={ideaMutateQuery.isPending}> {ideaMutateQuery.isPending ? <Loader2 size={15} className="animate-spin text-secondary mr-2" /> : null}  Post</Button>
+          <Button disabled={ideaMutateQuery.isPending}>
+            {" "}
+            {ideaMutateQuery.isPending ? (
+              <Loader2 size={15} className="animate-spin text-secondary mr-2" />
+            ) : null}{" "}
+            Post
+          </Button>
         </div>
       </form>
     </Form>

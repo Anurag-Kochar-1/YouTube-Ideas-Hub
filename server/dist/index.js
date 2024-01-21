@@ -12,12 +12,13 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const baseUrl = process.env.AUTH0_BASE_URL;
 const port = process.env.PORT || 8000;
 const app = (0, express_1.default)();
+const auth0_authenticate_middleware_1 = require("./middlewares/auth0-authenticate.middleware");
 app.use((0, cors_1.default)({ origin: baseUrl }));
 app.use(body_parser_1.default.json());
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use(zod_middleware_1.zodMiddleware);
-// app.use(check0AuthJwt);
+app.use(auth0_authenticate_middleware_1.check0AuthJwt);
 app.use("/api/v1", api_1.default);
 // app.get(`/api/v1/test`, addAuth0User, (req: any, res: any) => {
 //   res.json(req.user);

@@ -8,10 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.IdeaController = void 0;
 const ideaValidation_1 = require("../validations/ideaValidation");
 const db_config_1 = require("../db/db.config");
+const axios_1 = __importDefault(require("axios"));
+const client_1 = require("@prisma/client");
 class IdeaController {
     static create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -53,6 +58,7 @@ class IdeaController {
         });
     }
     static fetchAll(req, res) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
         return __awaiter(this, void 0, void 0, function* () {
             console.log(`🥶 fetchAll method from ideaController called`);
             try {
@@ -66,7 +72,7 @@ class IdeaController {
                     limit = 10;
                 }
                 const skip = (page - 1) * limit;
-                const posts = yield db_config_1.prisma.idea.findMany({
+                let posts = yield db_config_1.prisma.idea.findMany({
                     where: categoryName
                         ? {
                             categories: {
@@ -86,6 +92,31 @@ class IdeaController {
                         createdAt: "desc",
                     },
                 });
+                for (let post of posts) {
+                    if (post.suggestedFor && Array.isArray(post.suggestedFor)) {
+                        for (let i = 0; i < post.suggestedFor.length; i++) {
+                            if (typeof post.suggestedFor[i] === "string") {
+                                try {
+                                    const id = post.suggestedFor[i];
+                                    const youtubeKey = process.env.YOUTUBE_KEY;
+                                    const { data } = yield axios_1.default.get(`https://www.googleapis.com/youtube/v3/channels?part=snippet,contentDetails,statistics&id=${id}&key=${youtubeKey}`);
+                                    const channelData = {
+                                        channelName: (_b = (_a = data === null || data === void 0 ? void 0 : data.items[0]) === null || _a === void 0 ? void 0 : _a.snippet) === null || _b === void 0 ? void 0 : _b.title,
+                                        channelId: (_c = data === null || data === void 0 ? void 0 : data.items[0]) === null || _c === void 0 ? void 0 : _c.id,
+                                        channelLogo: (_g = (_f = (_e = (_d = data === null || data === void 0 ? void 0 : data.items[0]) === null || _d === void 0 ? void 0 : _d.snippet) === null || _e === void 0 ? void 0 : _e.thumbnails) === null || _f === void 0 ? void 0 : _f.medium) === null || _g === void 0 ? void 0 : _g.url,
+                                        statistics: {
+                                            subscriberCount: (_j = (_h = data === null || data === void 0 ? void 0 : data.items[0]) === null || _h === void 0 ? void 0 : _h.statistics) === null || _j === void 0 ? void 0 : _j.subscriberCount
+                                        }
+                                    };
+                                    post.suggestedFor[i] = channelData;
+                                }
+                                catch (error) {
+                                    console.log(error);
+                                }
+                            }
+                        }
+                    }
+                }
                 const totalPosts = yield db_config_1.prisma.idea.count({
                     where: categoryName
                         ? {
@@ -156,15 +187,22 @@ class IdeaController {
     static delete(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                const user = req.user;
                 const id = req.query.id;
                 const data = yield db_config_1.prisma.idea.delete({
                     where: {
                         id: id === null || id === void 0 ? void 0 : id.toString(),
+                        createdBy: {
+                            email: user.email,
+                        },
                     },
                 });
                 return res.json(data);
             }
             catch (error) {
+                if (error instanceof client_1.Prisma.PrismaClientKnownRequestError && error.code === 'P2016') {
+                    return res.status(403).json({ error: 'User is not authorized to delete this idea' });
+                }
                 return res.json(error);
             }
         });
