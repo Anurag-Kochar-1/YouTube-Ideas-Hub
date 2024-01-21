@@ -18,10 +18,12 @@ app.use(zodMiddleware);
 app.use(check0AuthJwt);
 
 app.use("/api/v1", ApiRoutes);
-// app.get(`/api/v1/test`, addAuth0User, (req: any, res: any) => {
-//   res.json(req.user);
-// });
+app.get(`/api/v1/test`, (req: any, res: any) => {
+  res.json({result: "test passed ✅"})
+});
 
 app.listen(port, () => {
   console.log(`🚗 now listening on port ${port}`);
 });
+
+export default app

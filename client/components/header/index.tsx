@@ -18,6 +18,12 @@ export function Header() {
       <LogoWithText className="hidden md:flex" />
       <Logo className="md:hidden" />
 
+      <div className="text-white ">
+      {process.env.NEXT_PUBLIC_NODE_ENV === "dev" && "dev"}
+        {process.env.NEXT_PUBLIC_NODE_ENV === "prod" && "prod"}
+        {process.env.NEXT_PUBLIC_NODE_ENV === "test" && "test"}
+      </div>
+
       <div className="justify-end flex items-center gap-6">
         {/* <Button onClick={ideaModal.onOpen}> Post</Button> */}
         <IdeaDrawerDialog />

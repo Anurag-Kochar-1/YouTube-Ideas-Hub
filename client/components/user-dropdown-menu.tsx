@@ -32,7 +32,7 @@ export const UserDropdownMenu = () => {
         <DropdownMenuLabel>Acccount</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem
-          className="md:hidde"
+          className="md:hidden"
           onClick={() => router.push("/my-ideas")}
         >
           <User2 className="mr-2 h-4 w-4" />

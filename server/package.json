@@ -9,7 +9,8 @@
     "start": "node dist/index.js",
     "preserve": "npm run build",
     "serve": "concurrently \"npx tsc -w\"  \"nodemon dist/index.js\"",
-    "prettier": "prettier --write ."
+    "prettier": "prettier --write .",
+    "vercel-build" : "echo EEEEEEEEEEEE"
   },
   "keywords": [],
   "author": "",

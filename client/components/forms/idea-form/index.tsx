@@ -53,6 +53,8 @@ export const IdeaForm = ({ formMode, handleModalClose }: IdeaFormPropTypes) => {
         <CategoriesFormField form={form} />
         {/* <SuggestedForFormField form={form} /> */}
 
+ 
+
         {/* ========== Buttons ========== */}
         <div className="w-full flex justify-end items-center gap-10">
           {isDesktop ? (

@@ -20,9 +20,10 @@ app.use(express_1.default.urlencoded({ extended: false }));
 app.use(zod_middleware_1.zodMiddleware);
 app.use(auth0_authenticate_middleware_1.check0AuthJwt);
 app.use("/api/v1", api_1.default);
-// app.get(`/api/v1/test`, addAuth0User, (req: any, res: any) => {
-//   res.json(req.user);
-// });
+app.get(`/api/v1/test`, (req, res) => {
+    res.json({ result: "test passed ✅" });
+});
 app.listen(port, () => {
     console.log(`🚗 now listening on port ${port}`);
 });
+exports.default = app;
