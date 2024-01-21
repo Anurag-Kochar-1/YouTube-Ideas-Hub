@@ -268,9 +268,9 @@ export class IdeaController {
   
       return res.json(data);
     } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2016') {
-        return res.status(403).json({ error: 'User is not authorized to delete this idea' });
-      }
+      // if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2016') {
+      //   return res.status(403).json({ error: 'User is not authorized to delete this idea' });
+      // }
       return res.json(error);
     }
   }

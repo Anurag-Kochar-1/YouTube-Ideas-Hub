@@ -12,7 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.IdeaController = void 0;
 const ideaValidation_1 = require("../validations/ideaValidation");
 const db_config_1 = require("../db/db.config");
-const client_1 = require("@prisma/client");
 class IdeaController {
     static create(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -263,9 +262,9 @@ class IdeaController {
                 return res.json(data);
             }
             catch (error) {
-                if (error instanceof client_1.Prisma.PrismaClientKnownRequestError && error.code === 'P2016') {
-                    return res.status(403).json({ error: 'User is not authorized to delete this idea' });
-                }
+                // if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2016') {
+                //   return res.status(403).json({ error: 'User is not authorized to delete this idea' });
+                // }
                 return res.json(error);
             }
         });
