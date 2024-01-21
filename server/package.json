@@ -11,7 +11,11 @@
     "serve": "concurrently \"npx tsc -w\"  \"nodemon dist/index.js\"",
     "prettier": "prettier --write .",
     "vercel-build": "prisma generate && prisma migrate deploy && echo EEEEEEEEEEEE",
+    "generate": "npx prisma generate",
     "postinstall": "prisma generate"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
   },
   "keywords": [],
   "author": "",
