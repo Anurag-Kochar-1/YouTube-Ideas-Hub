@@ -9,6 +9,7 @@ const nextConfig = {
           {
             source: '/api/:path*',
             destination: `http://localhost:8000/api/v1/:path*`,
+            destination: `https://youtube-ideas-hub.vercel.app/api/v1/:path*`,
           },
         ];
       },
